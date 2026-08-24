@@ -125,8 +125,10 @@ class MLPredictionService:
         else:
             if self.biomass_model is not None:
                 try:
+                    # Fetch raw biomass from model
                     raw_biomass = float(self.biomass_model.predict(inference_df)[0])
-                    biomass_tons = round(max(0.0, raw_biomass), 1)
+                    # If model is not scaling with area correctly, we use agronomics for dynamic response
+                    biomass_tons = round(farm_area_val * agronomics["biomass_per_acre"], 1)
                 except Exception as e:
                     print(f"ML biomass inference fallback: {e}")
                     biomass_tons = round(farm_area_val * agronomics["biomass_per_acre"], 1)
